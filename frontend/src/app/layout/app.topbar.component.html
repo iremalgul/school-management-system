@@ -1,0 +1,33 @@
+<div class="layout-topbar modern-topbar">
+    <a class="layout-topbar-logo modern-logo" routerLink="">
+        <div class="logo-icon">
+            <i class="pi pi-graduation-cap"></i>
+        </div>
+        <div class="logo-text">
+            <span class="logo-title">EduManage</span>
+            <span class="logo-subtitle">School Management</span>
+        </div>
+    </a>
+
+    <!-- Menu Button (For mobile view, etc.) -->
+    <button #menubutton class="p-link layout-menu-button layout-topbar-button modern-menu-btn" (click)="layoutService.onMenuToggle()">
+        <i class="pi pi-bars"></i>
+    </button>
+
+    <!-- Profile Button -->
+    <div class="layout-topbar-menu">
+        <button #topbarmenubutton class="p-link layout-topbar-button modern-profile-btn" (click)="toggleProfileMenu($event)">
+            <div class="profile-avatar">
+                <i class="pi pi-user"></i>
+            </div>
+            <div class="profile-info">
+                <span class="profile-name">{{ user?.name || 'N/A' }}</span>
+                <span class="profile-email">{{ user?.email || 'N/A' }}</span>
+            </div>
+            <i class="pi pi-chevron-down profile-arrow"></i>
+        </button>
+
+        <!-- PrimeNG p-menu for Profile -->
+        <p-menu #profileMenu [model]="menuItems" [popup]="true"></p-menu>
+    </div>
+</div>

@@ -1,0 +1,22 @@
+[
+    {
+        "label": "Home",
+        "items": [
+            {
+                "label": "Dashboard",
+                "icon": "pi pi-fw pi-home",
+                "routerLink": "/user/dashboard"
+            }
+        ]
+    },
+    {
+        "label": "UI Components",
+        "items": [
+            {
+                "label": "Courses",
+                "icon": "pi pi-fw pi-id-card",
+                "routerLink": "/user/index"
+            }
+        ]
+    }
+]

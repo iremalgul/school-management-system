@@ -1,0 +1,156 @@
+<div class="modern-container fade-in">
+  <!-- Header Section -->
+  <div class="modern-header slide-up">
+    <div class="header-content">
+      <h1 class="header-title">
+        <i class="pi pi-chart-bar"></i>
+        My Grades
+      </h1>
+      <p class="header-subtitle">Track your academic progress and exam results</p>
+    </div>
+    <div class="header-stats" *ngIf="examResults.length > 0">
+      <div class="stat-card">
+        <div class="stat-icon">
+          <i class="pi pi-star"></i>
+        </div>
+        <div class="stat-content">
+          <span class="stat-number">{{ courseAverage.toFixed(1) }}</span>
+          <span class="stat-label">Course Average</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Course Selection -->
+  <div class="modern-section">
+    <div class="section-header">
+      <h2 class="section-title">
+        <i class="pi pi-book"></i>
+        Select Course
+      </h2>
+      <p class="section-subtitle">Choose a course to view your exam results</p>
+    </div>
+    
+    <div class="modern-card course-selection">
+      <div class="selection-content">
+        <div class="dropdown-container">
+          <label class="dropdown-label">Course:</label>
+          <p-dropdown 
+            [options]="courses" 
+            [(ngModel)]="selectedCourse"
+            optionLabel="name"
+            placeholder="Select a course to view grades"
+            (onChange)="onCourseSelect()"
+            class="modern-dropdown">
+          </p-dropdown>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Results Section -->
+  <div *ngIf="selectedCourse && examResults.length > 0" class="modern-section">
+    <!-- Course Average Card -->
+    <div class="average-card modern-card scale-in">
+      <div class="average-content">
+        <div class="average-icon">
+          <i class="pi pi-trophy"></i>
+        </div>
+        <div class="average-info">
+          <h3 class="average-title">Course Average</h3>
+          <div class="average-score" [ngClass]="getGradeColor(courseAverage)">
+            {{ courseAverage.toFixed(1) }}
+          </div>
+        </div>
+        <div class="average-details">
+          <p class="course-name">{{ selectedCourse.name }}</p>
+          <p class="exam-count">{{ examResults.length }} exam{{ examResults.length !== 1 ? 's' : '' }} completed</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Exam Results Table -->
+    <div class="modern-card results-table scale-in">
+      <div class="table-header">
+        <h3 class="table-title">
+          <i class="pi pi-list"></i>
+          Exam Results
+        </h3>
+      </div>
+      
+      <div class="modern-table">
+        <div class="table-header-row">
+          <div class="table-cell header">Exam Name</div>
+          <div class="table-cell header">Date</div>
+          <div class="table-cell header">Score</div>
+          <div class="table-cell header">Status</div>
+          <div class="table-cell header">Actions</div>
+        </div>
+        
+        <div *ngFor="let result of examResults" class="table-row">
+          <div class="table-cell">
+            <div class="exam-name">
+              <i class="pi pi-file-edit"></i>
+              {{ result.examName }}
+            </div>
+          </div>
+          <div class="table-cell">
+            <div class="exam-date">
+              {{ result.submittedAt | date:'MMM dd, yyyy' }}
+            </div>
+          </div>
+          <div class="table-cell">
+            <div class="score-display" [ngClass]="getGradeColor(result.score)">
+              {{ result.score.toFixed(1) }}
+            </div>
+          </div>
+          <div class="table-cell">
+            <div class="status-badge" [ngClass]="result.isPassed ? 'status-passed' : 'status-failed'">
+              <i [class]="result.isPassed ? 'pi pi-check' : 'pi pi-times'"></i>
+              {{ result.isPassed ? 'Passed' : 'Failed' }}
+            </div>
+          </div>
+          <div class="table-cell">
+            <button 
+              class="modern-btn modern-btn-info btn-sm" 
+              (click)="showExamDetails(result)">
+              <i class="pi pi-eye"></i>
+              Details
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Empty State -->
+  <div *ngIf="selectedCourse && examResults.length === 0 && !loading" class="modern-section">
+    <div class="modern-card empty-state">
+      <div class="empty-content">
+        <div class="empty-icon">
+          <i class="pi pi-info-circle"></i>
+        </div>
+        <h3 class="empty-title">No Results Found</h3>
+        <p class="empty-message">You haven't completed any exams for this course yet.</p>
+        <div class="empty-actions">
+          <button class="modern-btn modern-btn-primary" (click)="goToExams()">
+            <i class="pi pi-list"></i>
+            View Available Exams
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Loading State -->
+  <div *ngIf="loading" class="modern-section">
+    <div class="modern-card loading-state">
+      <div class="loading-content">
+        <div class="loading-spinner">
+          <i class="pi pi-spin pi-spinner"></i>
+        </div>
+        <p class="loading-message">Loading your grades...</p>
+      </div>
+    </div>
+  </div>
+</div>

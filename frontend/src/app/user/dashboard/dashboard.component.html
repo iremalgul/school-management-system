@@ -1,0 +1,209 @@
+<div class="modern-container fade-in">
+  <!-- Header Section -->
+  <div class="modern-header slide-up">
+    <div class="header-content">
+      <h1 class="header-title">
+        <i class="pi pi-home"></i>
+        Student Dashboard
+      </h1>
+      <p class="header-subtitle">Welcome back! Here's your academic overview</p>
+    </div>
+    <div class="header-stats" *ngIf="user">
+      <div class="stat-card">
+        <div class="stat-icon">
+          <i class="pi pi-user"></i>
+        </div>
+        <div class="stat-content">
+          <span class="stat-number">{{ user.isAdmin ? 'Teacher' : 'Student' }}</span>
+          <span class="stat-label">Role</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Quick Actions -->
+  <div class="modern-section">
+    <div class="section-header">
+      <h2 class="section-title">
+        <i class="pi pi-bolt"></i>
+        Quick Actions
+      </h2>
+      <p class="section-subtitle">Access your most important features</p>
+    </div>
+    
+    <div class="quick-actions-grid">
+      <div class="action-card modern-card scale-in" (click)="goToExams()">
+        <div class="action-icon">
+          <i class="pi pi-book"></i>
+        </div>
+        <div class="action-content">
+          <h3 class="action-title">My Courses</h3>
+          <p class="action-description">View your enrolled courses and exams</p>
+        </div>
+        <div class="action-arrow">
+          <i class="pi pi-arrow-right"></i>
+        </div>
+      </div>
+
+      <div class="action-card modern-card scale-in" (click)="goToGrades()">
+        <div class="action-icon">
+          <i class="pi pi-chart-bar"></i>
+        </div>
+        <div class="action-content">
+          <h3 class="action-title">My Grades</h3>
+          <p class="action-description">Check your exam results and averages</p>
+        </div>
+        <div class="action-arrow">
+          <i class="pi pi-arrow-right"></i>
+        </div>
+      </div>
+
+      <div class="action-card modern-card scale-in" (click)="goToProfile()">
+        <div class="action-icon">
+          <i class="pi pi-user-edit"></i>
+        </div>
+        <div class="action-content">
+          <h3 class="action-title">Profile Settings</h3>
+          <p class="action-description">Update your personal information</p>
+        </div>
+        <div class="action-arrow">
+          <i class="pi pi-arrow-right"></i>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- User Information -->
+  <div class="modern-section">
+    <div class="section-header">
+      <h2 class="section-title">
+        <i class="pi pi-info-circle"></i>
+        Personal Information
+      </h2>
+      <p class="section-subtitle">Your account details and profile</p>
+    </div>
+    
+    <div class="modern-card user-info-card scale-in">
+      <div class="user-info-header">
+        <div class="user-avatar">
+          <i class="pi pi-user"></i>
+        </div>
+        <div class="user-basic-info">
+          <h3 class="user-name">{{ user?.name || 'Loading...' }}</h3>
+          <p class="user-role">
+            <i class="pi pi-badge"></i>
+            {{ user?.isAdmin ? 'Teacher' : 'Student' }}
+          </p>
+        </div>
+        <div class="user-status">
+          <div class="status-badge status-active">
+            <i class="pi pi-check-circle"></i>
+            Active
+          </div>
+        </div>
+      </div>
+      
+      <div class="user-details-grid">
+        <div class="detail-item">
+          <div class="detail-icon">
+            <i class="pi pi-id-card"></i>
+          </div>
+          <div class="detail-content">
+            <span class="detail-label">Student Number</span>
+            <span class="detail-value">{{ user?.number || 'N/A' }}</span>
+          </div>
+        </div>
+        
+        <div class="detail-item">
+          <div class="detail-icon">
+            <i class="pi pi-envelope"></i>
+          </div>
+          <div class="detail-content">
+            <span class="detail-label">Email Address</span>
+            <span class="detail-value">{{ user?.email || 'N/A' }}</span>
+          </div>
+        </div>
+        
+        <div class="detail-item">
+          <div class="detail-icon">
+            <i class="pi pi-calendar"></i>
+          </div>
+          <div class="detail-content">
+            <span class="detail-label">Member Since</span>
+            <span class="detail-value">{{ getCurrentDate() }}</span>
+          </div>
+        </div>
+        
+        <div class="detail-item">
+          <div class="detail-icon">
+            <i class="pi pi-shield"></i>
+          </div>
+          <div class="detail-content">
+            <span class="detail-label">Account Type</span>
+            <span class="detail-value">{{ user?.isAdmin ? 'Administrator' : 'Student Account' }}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Recent Activity -->
+  <div class="modern-section">
+    <div class="section-header">
+      <h2 class="section-title">
+        <i class="pi pi-clock"></i>
+        Recent Activity
+      </h2>
+      <p class="section-subtitle">Your latest academic activities</p>
+    </div>
+    
+    <div class="modern-card activity-card scale-in">
+      <div class="activity-list">
+        <div class="activity-item">
+          <div class="activity-icon">
+            <i class="pi pi-book"></i>
+          </div>
+          <div class="activity-content">
+            <h4 class="activity-title">Course Enrollment</h4>
+            <p class="activity-description">You enrolled in new courses this semester</p>
+            <span class="activity-time">2 days ago</span>
+          </div>
+        </div>
+        
+        <div class="activity-item">
+          <div class="activity-icon">
+            <i class="pi pi-file-edit"></i>
+          </div>
+          <div class="activity-content">
+            <h4 class="activity-title">Exam Completed</h4>
+            <p class="activity-description">You completed the Mathematics exam</p>
+            <span class="activity-time">1 week ago</span>
+          </div>
+        </div>
+        
+        <div class="activity-item">
+          <div class="activity-icon">
+            <i class="pi pi-chart-bar"></i>
+          </div>
+          <div class="activity-content">
+            <h4 class="activity-title">Grade Updated</h4>
+            <p class="activity-description">Your Science exam grade has been published</p>
+            <span class="activity-time">2 weeks ago</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Loading State -->
+  <div *ngIf="!user" class="modern-section">
+    <div class="modern-card loading-state">
+      <div class="loading-content">
+        <div class="loading-spinner">
+          <i class="pi pi-spin pi-spinner"></i>
+        </div>
+        <p class="loading-message">Loading your dashboard...</p>
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,117 @@
+<div class="modern-container fade-in">
+  <!-- Header Section -->
+  <div class="modern-header slide-up">
+    <div class="header-content">
+      <h1 class="header-title">
+        <i class="pi pi-building"></i>
+        Department Management
+      </h1>
+      <p class="header-subtitle">Manage academic departments and organizational structure</p>
+    </div>
+    <div class="header-actions">
+      <button class="modern-btn modern-btn-primary" (click)="openDialog()">
+        <i class="pi pi-plus"></i>
+        New Department
+      </button>
+    </div>
+  </div>
+
+  <!-- Departments Grid -->
+  <div class="modern-section">
+    <div class="departments-grid">
+      <div *ngFor="let department of data; let i = index" 
+           class="department-card modern-card scale-in" 
+           [style.animation-delay]="(i * 0.1) + 's'">
+        <div class="department-header">
+          <div class="department-icon">
+            <i class="pi pi-building"></i>
+          </div>
+          <div class="department-info">
+            <h3 class="department-name">{{ department.name }}</h3>
+            <p class="department-id">ID: {{ department.id }}</p>
+          </div>
+        </div>
+        
+        <div class="department-actions">
+          <button class="action-btn edit-btn" (click)="openDialog(department)" title="Edit Department">
+            <i class="pi pi-pencil"></i>
+            Edit
+          </button>
+          <button class="action-btn delete-btn" (click)="deleteDepartment(department)" title="Delete Department">
+            <i class="pi pi-trash"></i>
+            Delete
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Empty State -->
+  <div *ngIf="data.length === 0" class="modern-section">
+    <div class="modern-card empty-state">
+      <div class="empty-content">
+        <div class="empty-icon">
+          <i class="pi pi-building"></i>
+        </div>
+        <h3 class="empty-title">No Departments Found</h3>
+        <p class="empty-message">Start by creating your first department</p>
+        <div class="empty-actions">
+          <button class="modern-btn modern-btn-primary" (click)="openDialog()">
+            <i class="pi pi-plus"></i>
+            Create Department
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<p-dialog 
+  [header]="isEditing ? 'Update Department' : 'Create New Department'" 
+  [modal]="true" 
+  [(visible)]="isDialogOpen" 
+  [style]="{ width: '28rem' }"
+  [closable]="true"
+  [draggable]="false"
+  [resizable]="false">
+    
+  <div class="dialog-content">
+    <div class="dialog-description">
+      <i class="pi pi-info-circle"></i>
+      {{ isEditing ? 'Update the department information below.' : 'Fill in the details to create a new department.' }}
+    </div>
+    
+    <form [formGroup]="departmentForm" class="department-form">
+      <div class="form-group">
+        <label for="name" class="form-label">
+          <i class="pi pi-building"></i>
+          Department Name
+        </label>
+        <input 
+          pInputText 
+          id="name" 
+          formControlName="name" 
+          placeholder="Enter department name"
+          class="form-input" />
+      </div>
+    </form>
+  </div>
+
+  <ng-template pTemplate="footer">
+    <div class="dialog-footer">
+      <button class="modern-btn modern-btn-secondary" (click)="closeDialog()">
+        <i class="pi pi-times"></i>
+        Cancel
+      </button>
+      <button 
+        class="modern-btn modern-btn-primary" 
+        (click)="saveDepartment()" 
+        [disabled]="departmentForm.invalid">
+        <i class="pi pi-check"></i>
+        {{ isEditing ? 'Update Department' : 'Create Department' }}
+      </button>
+    </div>
+  </ng-template>
+</p-dialog>
+
+

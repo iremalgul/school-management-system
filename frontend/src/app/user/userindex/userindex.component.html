@@ -1,0 +1,228 @@
+<div class="modern-container fade-in">
+  <!-- Header Section -->
+  <div class="modern-header slide-up">
+    <div class="header-content">
+      <h1 class="header-title">
+        <i class="pi pi-book"></i>
+        My Courses
+      </h1>
+      <p class="header-subtitle">Manage your course enrollments and access exams</p>
+    </div>
+    <div class="header-stats">
+      <div class="stat-card">
+        <div class="stat-icon">
+          <i class="pi pi-graduation-cap"></i>
+        </div>
+        <div class="stat-content">
+          <span class="stat-number">{{ myCourses.length }}</span>
+          <span class="stat-label">Enrolled Courses</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Available Courses Section -->
+  <div class="modern-section">
+    <div class="section-header">
+      <h2 class="section-title">
+        <i class="pi pi-plus-circle"></i>
+        Available Courses
+      </h2>
+      <p class="section-subtitle">Browse and enroll in new courses</p>
+    </div>
+    
+    <!-- Filter Section -->
+    <div class="modern-card filter-section">
+      <div class="filter-content">
+        <div class="filter-group">
+          <label class="filter-label">
+            <i class="pi pi-filter"></i>
+            Filter by Department:
+          </label>
+          <div class="filter-controls">
+            <p-dropdown 
+              [options]="departments" 
+              [(ngModel)]="selectedDepartmentId"
+              optionLabel="name"
+              optionValue="id"
+              placeholder="All Departments"
+              (onChange)="onDepartmentFilter()"
+              class="department-dropdown">
+            </p-dropdown>
+            <button 
+              class="modern-btn modern-btn-secondary clear-btn" 
+              (click)="clearFilter()"
+              [disabled]="selectedDepartmentId === null">
+              <i class="pi pi-times"></i>
+              Clear Filter
+            </button>
+          </div>
+        </div>
+        <div class="filter-stats">
+          <span class="filter-count">
+            Showing {{ filteredData.length }} of {{ data.length }} courses
+          </span>
+        </div>
+      </div>
+    </div>
+    
+    <div class="modern-card course-grid">
+      <div *ngFor="let course of filteredData" class="course-card scale-in">
+        <div class="course-header">
+          <div class="course-icon">
+            <i class="pi pi-book"></i>
+          </div>
+          <div class="course-info">
+            <h3 class="course-title">{{ course.name }}</h3>
+            <p class="course-teacher">{{ course.teacher.name }}</p>
+          </div>
+        </div>
+        
+        <div class="course-details">
+          <div class="detail-item">
+            <i class="pi pi-calendar"></i>
+            <span>{{ course.day }}</span>
+          </div>
+          <div class="detail-item">
+            <i class="pi pi-clock"></i>
+            <span>{{ course.time }}</span>
+          </div>
+          <div class="detail-item">
+            <i class="pi pi-building"></i>
+            <span>{{ departmentLookup.get(course.departmentId) || 'Unknown' }}</span>
+          </div>
+        </div>
+        
+        <div class="course-actions">
+          <button 
+            class="modern-btn modern-btn-primary" 
+            (click)="takeCourse(course)" 
+            [disabled]="course.isSubscripe">
+            <i class="pi pi-plus"></i>
+            {{ course.isSubscripe ? 'Enrolled' : 'Enroll' }}
+          </button>
+          <button 
+            class="modern-btn modern-btn-danger" 
+            (click)="dropCourse(course)" 
+            [disabled]="!course.isSubscripe">
+            <i class="pi pi-minus"></i>
+            Drop
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- My Courses Section -->
+  <div class="modern-section">
+    <div class="section-header">
+      <h2 class="section-title">
+        <i class="pi pi-check-circle"></i>
+        My Enrolled Courses
+      </h2>
+      <p class="section-subtitle">Access your courses and take exams</p>
+    </div>
+    
+    <div class="modern-card">
+      <div *ngFor="let course of myCourses" class="enrolled-course scale-in">
+        <div class="course-main">
+          <div class="course-header">
+            <div class="course-icon enrolled">
+              <i class="pi pi-check"></i>
+            </div>
+            <div class="course-info">
+              <h3 class="course-title">{{ course.name }}</h3>
+              <p class="course-teacher">{{ course.teacher.name }}</p>
+            </div>
+          </div>
+          
+          <div class="course-details">
+            <div class="detail-item">
+              <i class="pi pi-calendar"></i>
+              <span>{{ course.day }}</span>
+            </div>
+            <div class="detail-item">
+              <i class="pi pi-clock"></i>
+              <span>{{ course.time }}</span>
+            </div>
+            <div class="detail-item">
+              <i class="pi pi-building"></i>
+              <span>{{ departmentLookup.get(course.departmentId) || 'Unknown' }}</span>
+            </div>
+          </div>
+        </div>
+        
+        <div class="course-actions">
+          <button 
+            class="modern-btn modern-btn-info" 
+            (click)="showExams(course)">
+            <i class="pi pi-list"></i>
+            Exams
+          </button>
+          <button 
+            class="modern-btn modern-btn-success" 
+            (click)="viewGrades(course)">
+            <i class="pi pi-chart-bar"></i>
+            Grades
+          </button>
+        </div>
+        
+        <!-- Expanded Exams Section -->
+        <div *ngIf="expandedCourseId === course.id" class="exams-section slide-up">
+          <div class="exams-header">
+            <h4>Available Exams</h4>
+          </div>
+          <div *ngIf="expandedExams.length > 0; else noExams" class="exams-list">
+            <div *ngFor="let exam of expandedExams" class="exam-item">
+              <div class="exam-info">
+                <h5>{{ exam.name }}</h5>
+                <div class="exam-dates">
+                  <p><i class="pi pi-calendar"></i> Start: {{ exam.examDateStart | date:'MMM dd, yyyy HH:mm' }}</p>
+                  <p><i class="pi pi-calendar-times"></i> End: {{ exam.examDateEnd | date:'MMM dd, yyyy HH:mm' }}</p>
+                </div>
+                <div class="exam-status">
+                  <span class="status-badge" [ngClass]="getExamStatusColor(exam)">
+                    <i [class]="getExamStatus(exam) === 'active' ? 'pi pi-check-circle' : 
+                               getExamStatus(exam) === 'not-started' ? 'pi pi-clock' : 'pi pi-times'"></i>
+                    {{ getExamStatusText(exam) }}
+                  </span>
+                </div>
+              </div>
+              <div class="exam-actions">
+                <button 
+                  class="modern-btn" 
+                  [ngClass]="isExamActive(exam) ? 'modern-btn-success' : 'modern-btn-disabled'"
+                  [disabled]="!isExamActive(exam)"
+                  (click)="takeExam(exam)">
+                  <i class="pi pi-play"></i>
+                  {{ isExamActive(exam) ? 'Take Exam' : 'Exam Not Available' }}
+                </button>
+                <div *ngIf="!isExamActive(exam)" class="exam-message">
+                  <p *ngIf="getExamStatus(exam) === 'submitted'">
+                    <i class="pi pi-check-circle"></i>
+                    Exam already submitted
+                  </p>
+                  <p *ngIf="getExamStatus(exam) === 'not-started'">
+                    <i class="pi pi-info-circle"></i>
+                    Exam will start on {{ exam.examDateStart | date:'MMM dd, yyyy HH:mm' }}
+                  </p>
+                  <p *ngIf="getExamStatus(exam) === 'ended'">
+                    <i class="pi pi-exclamation-triangle"></i>
+                    Exam ended on {{ exam.examDateEnd | date:'MMM dd, yyyy HH:mm' }}
+                  </p>
+                </div>
+              </div>
+            </div>
+                    </div>
+                    <ng-template #noExams>
+            <div class="no-exams">
+              <i class="pi pi-info-circle"></i>
+              <p>No exams available for this course.</p>
+            </div>
+                    </ng-template>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+

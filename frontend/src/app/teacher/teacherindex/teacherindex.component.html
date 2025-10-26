@@ -1,0 +1,226 @@
+<div class="modern-container fade-in">
+  <!-- Header Section -->
+  <div class="modern-header slide-up">
+    <div class="header-content">
+      <h1 class="header-title">
+        <i class="pi pi-user-edit"></i>
+        Teacher Management
+      </h1>
+      <p class="header-subtitle">Manage teacher profiles, credentials, and academic assignments</p>
+    </div>
+    <div class="header-actions">
+      <button class="modern-btn modern-btn-primary" (click)="openInsertDialog()">
+        <i class="pi pi-plus"></i>
+        New Teacher
+      </button>
+    </div>
+  </div>
+
+  <!-- Teachers Grid -->
+  <div class="modern-section">
+    <div class="teachers-grid">
+      <div *ngFor="let teacher of data; let i = index" 
+           class="teacher-card modern-card scale-in" 
+           [style.animation-delay]="(i * 0.1) + 's'">
+        <div class="teacher-header">
+          <div class="teacher-avatar">
+            <i class="pi pi-user"></i>
+          </div>
+          <div class="teacher-info">
+            <h3 class="teacher-name">{{ teacher.name }}</h3>
+            <p class="teacher-email">{{ teacher.email }}</p>
+            <p class="teacher-id">ID: {{ teacher.id }}</p>
+          </div>
+        </div>
+        
+        <div class="teacher-details">
+          <div class="detail-item">
+            <i class="pi pi-lock"></i>
+            <span class="detail-label">Password:</span>
+            <span class="detail-value">{{ teacher.password }}</span>
+          </div>
+        </div>
+        
+        <div class="teacher-actions">
+          <button class="action-btn edit-btn" (click)="openUpdateDialog(teacher)" title="Edit Teacher">
+            <i class="pi pi-pencil"></i>
+            Edit
+          </button>
+          <button class="action-btn delete-btn" (click)="deleteTeacher(teacher)" title="Delete Teacher">
+            <i class="pi pi-trash"></i>
+            Delete
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Empty State -->
+  <div *ngIf="data.length === 0" class="modern-section">
+    <div class="modern-card empty-state">
+      <div class="empty-content">
+        <div class="empty-icon">
+          <i class="pi pi-user-edit"></i>
+        </div>
+        <h3 class="empty-title">No Teachers Found</h3>
+        <p class="empty-message">Start by adding your first teacher</p>
+        <div class="empty-actions">
+          <button class="modern-btn modern-btn-primary" (click)="openInsertDialog()">
+            <i class="pi pi-plus"></i>
+            Add Teacher
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Update Dialog -->
+<p-dialog 
+  header="Edit Teacher Profile" 
+  [modal]="true" 
+  [(visible)]="isUpdate" 
+  [style]="{ width: '32rem' }"
+  [closable]="true"
+  [draggable]="false"
+  [resizable]="false">
+    
+  <div class="dialog-content">
+    <div class="dialog-description">
+      <i class="pi pi-info-circle"></i>
+      Update the teacher information below.
+    </div>
+    
+    <form [formGroup]="teacherForm" class="teacher-form">
+      <div class="form-group">
+        <label for="name" class="form-label">
+          <i class="pi pi-user"></i>
+          Full Name
+        </label>
+        <input 
+          pInputText 
+          id="name" 
+          formControlName="name" 
+          placeholder="Enter teacher's full name"
+          class="form-input" />
+      </div>
+      
+      <div class="form-group">
+        <label for="email" class="form-label">
+          <i class="pi pi-envelope"></i>
+          Email Address
+        </label>
+        <input 
+          pInputText 
+          id="email" 
+          formControlName="email" 
+          placeholder="Enter email address"
+          class="form-input" />
+      </div>
+      
+      <div class="form-group">
+        <label for="password" class="form-label">
+          <i class="pi pi-lock"></i>
+          Password
+        </label>
+        <input 
+          pInputText 
+          id="password" 
+          formControlName="password" 
+          placeholder="Leave empty to keep current password"
+          class="form-input" />
+      </div>
+    </form>
+  </div>
+
+  <ng-template pTemplate="footer">
+    <div class="dialog-footer">
+      <button class="modern-btn modern-btn-secondary" (click)="isUpdate = false; teacherForm.reset()">
+        <i class="pi pi-times"></i>
+        Cancel
+      </button>
+      <button 
+        class="modern-btn modern-btn-primary" 
+        (click)="saveTeacher()">
+        <i class="pi pi-check"></i>
+        Update Teacher
+      </button>
+    </div>
+  </ng-template>
+</p-dialog>
+
+<!-- Insert Dialog -->
+<p-dialog 
+  header="Create New Teacher" 
+  [modal]="true" 
+  [(visible)]="isInsert" 
+  [style]="{ width: '32rem' }"
+  [closable]="true"
+  [draggable]="false"
+  [resizable]="false">
+    
+  <div class="dialog-content">
+    <div class="dialog-description">
+      <i class="pi pi-info-circle"></i>
+      Fill in the details to create a new teacher.
+    </div>
+    
+    <form [formGroup]="teacherForm" class="teacher-form">
+      <div class="form-group">
+        <label for="name" class="form-label">
+          <i class="pi pi-user"></i>
+          Full Name
+        </label>
+        <input 
+          pInputText 
+          id="name" 
+          formControlName="name" 
+          placeholder="Enter teacher's full name"
+          class="form-input" />
+      </div>
+      
+      <div class="form-group">
+        <label for="email" class="form-label">
+          <i class="pi pi-envelope"></i>
+          Email Address
+        </label>
+        <input 
+          pInputText 
+          email 
+          id="email" 
+          formControlName="email" 
+          placeholder="Enter email address"
+          class="form-input" />
+      </div>
+      
+      <div class="form-group">
+        <label for="password" class="form-label">
+          <i class="pi pi-lock"></i>
+          Password
+        </label>
+        <input 
+          pInputText 
+          id="password" 
+          formControlName="password" 
+          placeholder="Enter password"
+          class="form-input" />
+      </div>
+    </form>
+  </div>
+
+  <ng-template pTemplate="footer">
+    <div class="dialog-footer">
+      <button class="modern-btn modern-btn-secondary" (click)="closeInsertDialog()">
+        <i class="pi pi-times"></i>
+        Cancel
+      </button>
+      <button 
+        class="modern-btn modern-btn-primary" 
+        (click)="insertTeacher()"
+        [disabled]="teacherForm.invalid">
+        <i class="pi pi-check"></i>
+        Create Teacher
+      </button>
+    </div>
+  </ng-template>
+</p-dialog>

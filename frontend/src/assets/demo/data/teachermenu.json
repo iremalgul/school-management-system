@@ -1,0 +1,37 @@
+[
+    {
+        "label": "Home",
+        "items": [
+            {
+                "label": "Dashboard",
+                "icon": "pi pi-fw pi-home",
+                "routerLink": "/"
+            }
+        ]
+    },
+    {
+        "label": "Management",
+        "items": [
+            {
+                "label": "Department",
+                "icon": "pi pi-fw pi-building",
+                "routerLink": "/department/index"
+            },
+            {
+                "label": "Course",
+                "icon": "pi pi-fw pi-book",
+                "routerLink": "/course/index"
+            },
+            {
+                "label": "Student",
+                "icon": "pi pi-fw pi-users",
+                "routerLink": "/student/index"
+            },
+            {
+                "label": "Teacher",
+                "icon": "pi pi-fw pi-user",
+                "routerLink": "/teacher/index"
+            }
+        ]
+    }
+]

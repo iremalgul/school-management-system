@@ -1,0 +1,157 @@
+<div class="modern-container fade-in">
+  <!-- Header Section -->
+  <div class="modern-header slide-up">
+    <div class="header-content">
+      <h1 class="header-title">
+        <i class="pi pi-chart-line"></i>
+        Teacher Dashboard
+      </h1>
+      <p class="header-subtitle">Welcome to your school management control center</p>
+    </div>
+  </div>
+
+  <!-- Quick Stats -->
+  <div class="modern-section">
+    <div class="stats-grid">
+      <div class="stat-card modern-card scale-in">
+        <div class="stat-icon">
+          <i class="pi pi-building"></i>
+        </div>
+        <div class="stat-content">
+          <span class="stat-number">{{ loading ? '...' : departmentCount }}</span>
+          <span class="stat-label">Departments</span>
+        </div>
+      </div>
+
+      <div class="stat-card modern-card scale-in">
+        <div class="stat-icon">
+          <i class="pi pi-book"></i>
+        </div>
+        <div class="stat-content">
+          <span class="stat-number">{{ loading ? '...' : courseCount }}</span>
+          <span class="stat-label">Courses</span>
+        </div>
+      </div>
+
+      <div class="stat-card modern-card scale-in">
+        <div class="stat-icon">
+          <i class="pi pi-users"></i>
+        </div>
+        <div class="stat-content">
+          <span class="stat-number">{{ loading ? '...' : studentCount }}</span>
+          <span class="stat-label">Students</span>
+        </div>
+      </div>
+
+      <div class="stat-card modern-card scale-in">
+        <div class="stat-icon">
+          <i class="pi pi-file-edit"></i>
+        </div>
+        <div class="stat-content">
+          <span class="stat-number">{{ loading ? '...' : activeExamCount }}</span>
+          <span class="stat-label">Active Exams</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Quick Actions -->
+  <div class="modern-section">
+    <div class="section-header">
+      <h2 class="section-title">
+        <i class="pi pi-bolt"></i>
+        Quick Actions
+      </h2>
+      <p class="section-subtitle">Access your most important management tools</p>
+    </div>
+    
+    <div class="actions-grid">
+      <div class="action-card modern-card scale-in" routerLink="/department/index">
+        <div class="action-icon">
+          <i class="pi pi-building"></i>
+        </div>
+        <div class="action-content">
+          <h3 class="action-title">Manage Departments</h3>
+          <p class="action-description">Create and organize academic departments</p>
+        </div>
+        <div class="action-arrow">
+          <i class="pi pi-arrow-right"></i>
+        </div>
+      </div>
+
+      <div class="action-card modern-card scale-in" routerLink="/course/index">
+        <div class="action-icon">
+          <i class="pi pi-book"></i>
+        </div>
+        <div class="action-content">
+          <h3 class="action-title">Manage Courses</h3>
+          <p class="action-description">Set up courses, schedules, and enrollments</p>
+        </div>
+        <div class="action-arrow">
+          <i class="pi pi-arrow-right"></i>
+        </div>
+      </div>
+
+      <div class="action-card modern-card scale-in" routerLink="/student/index">
+        <div class="action-icon">
+          <i class="pi pi-users"></i>
+        </div>
+        <div class="action-content">
+          <h3 class="action-title">Manage Students</h3>
+          <p class="action-description">View and manage student records</p>
+        </div>
+        <div class="action-arrow">
+          <i class="pi pi-arrow-right"></i>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Recent Activity -->
+  <div class="modern-section">
+    <div class="section-header">
+      <h2 class="section-title">
+        <i class="pi pi-clock"></i>
+        Recent Activity
+      </h2>
+      <p class="section-subtitle">Latest updates and notifications</p>
+    </div>
+    
+    <div class="modern-card activity-card scale-in">
+      <div class="activity-list">
+        <div class="activity-item">
+          <div class="activity-icon">
+            <i class="pi pi-book"></i>
+          </div>
+          <div class="activity-content">
+            <h4 class="activity-title">New Course Added</h4>
+            <p class="activity-description">Mathematics 101 has been created</p>
+            <span class="activity-time">2 hours ago</span>
+          </div>
+        </div>
+        
+        <div class="activity-item">
+          <div class="activity-icon">
+            <i class="pi pi-users"></i>
+          </div>
+          <div class="activity-content">
+            <h4 class="activity-title">Student Enrollment</h4>
+            <p class="activity-description">15 new students enrolled in Computer Science</p>
+            <span class="activity-time">4 hours ago</span>
+          </div>
+        </div>
+        
+        <div class="activity-item">
+          <div class="activity-icon">
+            <i class="pi pi-file-edit"></i>
+          </div>
+          <div class="activity-content">
+            <h4 class="activity-title">Exam Scheduled</h4>
+            <p class="activity-description">Physics midterm exam scheduled for next week</p>
+            <span class="activity-time">1 day ago</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

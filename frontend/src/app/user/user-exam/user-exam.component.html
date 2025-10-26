@@ -1,0 +1,246 @@
+<div class="modern-container fade-in">
+  <p-toast></p-toast>
+  
+  <!-- Unanswered Questions Dialog -->
+  <p-dialog 
+    header="⚠️ Cevaplanmamış Sorular" 
+    [(visible)]="showUnansweredDialog" 
+    [modal]="true" 
+    [closable]="true"
+    [style]="{width: '600px'}"
+    [baseZIndex]="10000">
+    
+    <div class="unanswered-dialog-content">
+      <div class="dialog-icon">
+        <i class="pi pi-exclamation-triangle"></i>
+      </div>
+      
+      <div class="dialog-message">
+        <h3>{{ unansweredQuestions.length }} soruya cevap vermediniz!</h3>
+        <p>Bu soruları cevaplamadan sınavı göndermek istediğinizden emin misiniz?</p>
+      </div>
+      
+      <div class="unanswered-questions-list">
+        <h4>Cevaplanmamış Sorular:</h4>
+        <div class="questions-grid">
+          <div 
+            *ngFor="let question of unansweredQuestions; let i = index" 
+            class="unanswered-question-item"
+            (click)="goToUnansweredQuestion(question.id)">
+            <div class="question-number">{{ getQuestionNumber(question.id) }}</div>
+            <div class="question-preview">
+              <p>{{ getQuestionPreview(question.question) }}</p>
+            </div>
+            <div class="question-action">
+              <i class="pi pi-arrow-right"></i>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <div class="dialog-actions">
+        <button 
+          class="modern-btn modern-btn-secondary" 
+          (click)="cancelSubmitWithUnanswered()">
+          <i class="pi pi-times"></i>
+          İptal Et
+        </button>
+        <button 
+          class="modern-btn modern-btn-warning" 
+          (click)="confirmSubmitWithUnanswered()">
+          <i class="pi pi-send"></i>
+          Yine de Gönder
+        </button>
+      </div>
+    </div>
+  </p-dialog>
+  
+  <!-- Exam Header -->
+  <div class="modern-header slide-up">
+    <div class="header-content">
+      <h1 class="header-title">
+        <i class="pi pi-file-edit"></i>
+        {{ exam.name }}
+      </h1>
+      <p class="header-subtitle">Complete your exam within the time limit</p>
+    </div>
+    <div class="header-stats" *ngIf="exam">
+      <div class="stat-card timer-card" 
+           [ngClass]="{
+             'timer-warning': remainingSeconds <= 30 && remainingSeconds > 10,
+             'timer-danger': remainingSeconds <= 10 && remainingSeconds > 0,
+             'timer-expired': remainingSeconds === 0
+           }">
+        <div class="stat-icon">
+          <i class="pi pi-clock" 
+             [ngClass]="{
+               'pi-spin': remainingSeconds <= 10 && remainingSeconds > 0
+             }"></i>
+        </div>
+        <div class="stat-content">
+          <span class="stat-number" 
+                [ngClass]="{
+                  'timer-warning-text': remainingSeconds <= 30 && remainingSeconds > 10,
+                  'timer-danger-text': remainingSeconds <= 10 && remainingSeconds > 0,
+                  'timer-expired-text': remainingSeconds === 0
+                }"
+                *ngIf="remainingSeconds > 0">{{ formatTime(remainingSeconds) }}</span>
+          <span class="stat-number timer-expired-text" *ngIf="remainingSeconds === 0">⏰ Time Up!</span>
+          <span class="stat-label">Time Remaining</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Exam Info -->
+  <div class="modern-section" *ngIf="exam">
+    <div class="modern-card exam-info scale-in">
+      <div class="info-grid">
+        <div class="info-item">
+          <div class="info-icon">
+            <i class="pi pi-calendar"></i>
+          </div>
+          <div class="info-content">
+            <h4>Start Date</h4>
+            <p>{{ exam.examDateStart | date:'MMM dd, yyyy HH:mm' }}</p>
+          </div>
+        </div>
+        <div class="info-item">
+          <div class="info-icon">
+            <i class="pi pi-calendar-times"></i>
+          </div>
+          <div class="info-content">
+            <h4>End Date</h4>
+            <p>{{ exam.examDateEnd | date:'MMM dd, yyyy HH:mm' }}</p>
+          </div>
+        </div>
+        <div class="info-item">
+          <div class="info-icon">
+            <i class="pi pi-star"></i>
+          </div>
+          <div class="info-content">
+            <h4>Passing Grade</h4>
+            <p>{{ exam.passPoint }}%</p>
+          </div>
+        </div>
+        <div class="info-item">
+          <div class="info-icon">
+            <i class="pi pi-list"></i>
+          </div>
+          <div class="info-content">
+            <h4>Total Questions</h4>
+            <p>{{ questions.length }}</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Questions Section -->
+  <div class="modern-section">
+    <div class="section-header">
+      <h2 class="section-title">
+        <i class="pi pi-question-circle"></i>
+        Exam Questions
+      </h2>
+      <p class="section-subtitle">Answer all questions carefully</p>
+    </div>
+    
+    <div class="modern-card questions-container">
+      <div *ngFor="let q of questions; let i = index" 
+           class="question-card scale-in" 
+           [attr.id]="getQuestionId(q.id)">
+        <div class="question-header">
+          <div class="question-number">{{ i + 1 }}</div>
+          <div class="question-text">
+            <h3>{{ q.question }}</h3>
+          </div>
+        </div>
+        
+        <div class="choices-container">
+          <div *ngFor="let choice of ['A', 'B', 'C', 'D', 'E']; let idx = index" class="choice-item">
+            <label class="choice-label">
+              <input 
+                type="radio"
+                name="question{{q.id}}"
+                [value]="idx + 1"
+                [checked]="answers[q.id] === (idx + 1)"
+                (change)="selectAnswer(q.id, idx + 1)"
+                [disabled]="examResult" />
+              <span class="choice-radio"></span>
+              <span class="choice-letter">{{ choice }}</span>
+              <span class="choice-text">{{ q['choice' + choice] }}</span>
+            </label>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Exam Result -->
+  <div *ngIf="examResult" class="modern-section">
+    <div class="modern-card result-card scale-in">
+      <div class="result-header">
+        <div class="result-icon">
+          <i class="pi pi-check-circle"></i>
+        </div>
+        <div class="result-content">
+          <h2 class="result-title">Exam Completed!</h2>
+          <p class="result-subtitle">Your results are ready</p>
+        </div>
+      </div>
+      
+      <div class="result-stats">
+        <div class="stat-item">
+          <div class="stat-value" [ngClass]="getGradeColor(examResult.score)">
+            {{ examResult.score || 0 }}
+          </div>
+          <div class="stat-label">Total Score</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-value" [ngClass]="examResult.isPassed ? 'text-green-600' : 'text-red-600'">
+            {{ examResult.isPassed ? 'PASSED' : 'FAILED' }}
+          </div>
+          <div class="stat-label">Result</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-value">{{ examResult.correctAnswers || 0 }}</div>
+          <div class="stat-label">Correct Answers</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-value">{{ examResult.totalQuestions || 0 }}</div>
+          <div class="stat-label">Total Questions</div>
+        </div>
+      </div>
+      
+      <div class="result-actions">
+        <button class="modern-btn modern-btn-primary" (click)="goToGrades()">
+          <i class="pi pi-chart-bar"></i>
+          View All Grades
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Submit Section -->
+  <div *ngIf="!examResult" class="modern-section">
+    <div class="modern-card submit-section">
+      <div class="submit-content">
+        <div class="submit-info">
+          <h3>Ready to Submit?</h3>
+          <p>Make sure you've answered all questions before submitting your exam.</p>
+        </div>
+        <div class="submit-actions">
+          <button 
+            class="modern-btn submit-btn" 
+            [ngClass]="examActive ? 'modern-btn-success' : 'modern-btn-disabled'"
+            (click)="submitAnswers()"
+            [disabled]="!examActive || examResult">
+            <i class="pi pi-send"></i>
+            {{ examResult ? 'Exam Submitted' : 'Submit Exam' }}
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,113 @@
+<div class="grid">
+  <div class="col-12">
+    <div class="card px-6 py-6">
+      <p-toast></p-toast>
+      <p-toolbar styleClass="mb-4">
+        <ng-template pTemplate="left">
+          <div class="my-2">
+            <button pButton pRipple label="New" icon="pi pi-plus" class="p-button-success mr-2" (click)="openNew()"></button>
+            <button pButton pRipple label="Delete" icon="pi pi-trash" class="p-button-danger" (click)="deleteSelectedExams()" [disabled]="!selectedExams || !selectedExams.length"></button>
+          </div>
+        </ng-template>
+      </p-toolbar>
+
+      <p-table #dt [value]="exams" [columns]="cols" responsiveLayout="scroll" [rows]="10"
+        [globalFilterFields]="['name','examDateStart','examDateEnd','passPoint']" [paginator]="true"
+        [rowsPerPageOptions]="rowsPerPageOptions" [showCurrentPageReport]="true"
+        currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries"
+        [(selection)]="selectedExams" selectionMode="multiple" [rowHover]="true" dataKey="id">
+        <ng-template pTemplate="caption">
+          <div class="flex flex-column md:flex-row md:justify-content-between md:align-items-center">
+            <h5 class="m-0">Exams</h5>
+            <span class="block mt-2 md:mt-0 p-input-icon-left">
+              <i class="pi pi-search"></i>
+              <input pInputText type="text" (input)="onGlobalFilter(dt, $event)" placeholder="Search..." class="w-full sm:w-auto" />
+            </span>
+          </div>
+        </ng-template>
+        <ng-template pTemplate="header" let-columns>
+          <tr>
+            <th style="width: 3rem">
+              <p-tableHeaderCheckbox></p-tableHeaderCheckbox>
+            </th>
+            <th *ngFor="let col of columns" pSortableColumn="{{col.field}}">
+              {{col.header}}
+              <p-sortIcon field="{{col.field}}"></p-sortIcon>
+            </th>
+            <th></th>
+          </tr>
+        </ng-template>
+        <ng-template pTemplate="body" let-exam let-columns="columns">
+          <tr>
+            <td>
+              <p-tableCheckbox [value]="exam"></p-tableCheckbox>
+            </td>
+            <td *ngFor="let col of columns">
+              {{ exam[col.field] }}
+            </td>
+            <td>
+              <div class="flex">
+                <button pButton pRipple icon="pi pi-pencil" class="p-button-rounded p-button-success mr-2" (click)="editExam(exam)"></button>
+                <button pButton pRipple icon="pi pi-trash" class="p-button-rounded p-button-warning" (click)="deleteExam(exam)"></button>
+                <button pButton pRipple icon="pi pi-question" class="p-button-rounded p-button-info ml-2" (click)="showQuestions(exam)"></button>
+              </div>
+            </td>
+          </tr>
+        </ng-template>
+      </p-table>
+    </div>
+
+    <p-dialog [(visible)]="examDialog" [style]="{width: '450px'}" header="Exam Details" [modal]="true" class="p-fluid">
+      <ng-template pTemplate="content">
+        <div class="field">
+          <label for="name">Name</label>
+          <input type="text" pInputText id="name" [(ngModel)]="exam.name" required autofocus [ngClass]="{'ng-invalid ng-dirty' : submitted && !exam.name}" />
+          <small class="ng-dirty ng-invalid" *ngIf="submitted && !exam.name">Name is required.</small>
+        </div>
+        <div class="field">
+          <label for="examDateStart">Start Date</label>
+          <input type="datetime-local" pInputText id="examDateStart" [(ngModel)]="exam.examDateStart" />
+        </div>
+        <div class="field">
+          <label for="examDateEnd">End Date</label>
+          <input type="datetime-local" pInputText id="examDateEnd" [(ngModel)]="exam.examDateEnd" />
+        </div>
+        <div class="field">
+          <label for="passPoint">Pass Point</label>
+          <input type="number" pInputText id="passPoint" [(ngModel)]="exam.passPoint" />
+        </div>
+        <div class="field">
+          <label for="durationMinutes">Duration (Minutes)</label>
+          <input type="number" pInputText id="durationMinutes" [(ngModel)]="exam.durationMinutes" min="1" required [ngClass]="{'ng-invalid ng-dirty' : submitted && (!exam.durationMinutes || exam.durationMinutes < 1)}" />
+          <small class="ng-dirty ng-invalid" *ngIf="submitted && (!exam.durationMinutes || exam.durationMinutes < 1)">Duration must be at least 1 minute.</small>
+        </div>
+      </ng-template>
+      <ng-template pTemplate="footer">
+        <button pButton pRipple label="Cancel" icon="pi pi-times" class="p-button-text" (click)="hideDialog()"></button>
+        <button pButton pRipple label="Save" icon="pi pi-check" class="p-button-text" (click)="saveExam()"></button>
+      </ng-template>
+    </p-dialog>
+
+    <p-dialog [(visible)]="deleteExamDialog" header="Confirm" [modal]="true" [style]="{width:'450px'}">
+      <div class="flex align-items-center justify-content-center">
+        <i class="pi pi-exclamation-triangle mr-3" style="font-size: 2rem"></i>
+        <span *ngIf="exam">Are you sure you want to delete <b>{{exam.name}}</b>?</span>
+      </div>
+      <ng-template pTemplate="footer">
+        <button pButton pRipple icon="pi pi-times" class="p-button-text" label="No" (click)="deleteExamDialog = false"></button>
+        <button pButton pRipple icon="pi pi-check" class="p-button-text" label="Yes" (click)="confirmDelete()"></button>
+      </ng-template>
+    </p-dialog>
+
+    <p-dialog [(visible)]="deleteExamsDialog" header="Confirm" [modal]="true" [style]="{width:'450px'}">
+      <div class="flex align-items-center justify-content-center">
+        <i class="pi pi-exclamation-triangle mr-3" style="font-size: 2rem"></i>
+        <span>Are you sure you want to delete selected exams?</span>
+      </div>
+      <ng-template pTemplate="footer">
+        <button pButton pRipple icon="pi pi-times" class="p-button-text" label="No" (click)="deleteExamsDialog = false"></button>
+        <button pButton pRipple icon="pi pi-check" class="p-button-text" label="Yes" (click)="confirmDeleteSelected()"></button>
+      </ng-template>
+    </p-dialog>
+  </div>
+</div>

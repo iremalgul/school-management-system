@@ -1,0 +1,119 @@
+<div class="grid">
+  <div class="col-12">
+    <div class="card px-6 py-6">
+      <p-toast></p-toast>
+      <p-toolbar styleClass="mb-4">
+        <ng-template pTemplate="left">
+          <div class="my-2">
+            <button pButton pRipple label="New" icon="pi pi-plus" class="p-button-success mr-2" (click)="openNew()"></button>
+            <button pButton pRipple label="Delete" icon="pi pi-trash" class="p-button-danger" (click)="deleteSelectedQuestions()" [disabled]="!selectedQuestions || !selectedQuestions.length"></button>
+          </div>
+        </ng-template>
+      </p-toolbar>
+
+      <p-table #dt [value]="questions" [columns]="cols" responsiveLayout="scroll" [rows]="10"
+        [globalFilterFields]="['question','choiceA','choiceB','choiceC','choiceD','choiceE','trueChoice']" [paginator]="true"
+        [rowsPerPageOptions]="rowsPerPageOptions" [showCurrentPageReport]="true"
+        currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries"
+        [(selection)]="selectedQuestions" selectionMode="multiple" [rowHover]="true" dataKey="id">
+        <ng-template pTemplate="caption">
+          <div class="flex flex-column md:flex-row md:justify-content-between md:align-items-center">
+            <h5 class="m-0">Questions</h5>
+            <span class="block mt-2 md:mt-0 p-input-icon-left">
+              <i class="pi pi-search"></i>
+              <input pInputText type="text" (input)="onGlobalFilter(dt, $event)" placeholder="Search..." class="w-full sm:w-auto" />
+            </span>
+          </div>
+        </ng-template>
+        <ng-template pTemplate="header" let-columns>
+          <tr>
+            <th style="width: 3rem">
+              <p-tableHeaderCheckbox></p-tableHeaderCheckbox>
+            </th>
+            <th *ngFor="let col of columns" pSortableColumn="{{col.field}}">
+              {{col.header}}
+              <p-sortIcon field="{{col.field}}"></p-sortIcon>
+            </th>
+            <th></th>
+          </tr>
+        </ng-template>
+        <ng-template pTemplate="body" let-question let-columns="columns">
+          <tr>
+            <td>
+              <p-tableCheckbox [value]="question"></p-tableCheckbox>
+            </td>
+            <td *ngFor="let col of columns">
+              {{ question[col.field] }}
+            </td>
+            <td>
+              <div class="flex">
+                <button pButton pRipple icon="pi pi-pencil" class="p-button-rounded p-button-success mr-2" (click)="editQuestion(question)"></button>
+                <button pButton pRipple icon="pi pi-trash" class="p-button-rounded p-button-warning" (click)="deleteQuestion(question)"></button>
+              </div>
+            </td>
+          </tr>
+        </ng-template>
+      </p-table>
+    </div>
+
+    <p-dialog [(visible)]="questionDialog" [style]="{width: '450px'}" header="Question Details" [modal]="true" class="p-fluid">
+      <ng-template pTemplate="content">
+        <div class="field">
+          <label for="question">Question</label>
+          <input type="text" pInputText id="question" [(ngModel)]="question.question" required autofocus [ngClass]="{'ng-invalid ng-dirty' : submitted && !question.question}" />
+          <small class="ng-dirty ng-invalid" *ngIf="submitted && !question.question">Question is required.</small>
+        </div>
+        <div class="field">
+          <label for="choiceA">Choice A</label>
+          <input type="text" pInputText id="choiceA" [(ngModel)]="question.choiceA" />
+        </div>
+        <div class="field">
+          <label for="choiceB">Choice B</label>
+          <input type="text" pInputText id="choiceB" [(ngModel)]="question.choiceB" />
+        </div>
+        <div class="field">
+          <label for="choiceC">Choice C</label>
+          <input type="text" pInputText id="choiceC" [(ngModel)]="question.choiceC" />
+        </div>
+        <div class="field">
+          <label for="choiceD">Choice D</label>
+          <input type="text" pInputText id="choiceD" [(ngModel)]="question.choiceD" />
+        </div>
+        <div class="field">
+          <label for="choiceE">Choice E</label>
+          <input type="text" pInputText id="choiceE" [(ngModel)]="question.choiceE" />
+        </div>
+        <div class="field">
+          <label for="trueChoice">True Choice</label>
+          <input type="number" pInputText id="trueChoice" [(ngModel)]="question.trueChoice" />
+        </div>
+      </ng-template>
+      <ng-template pTemplate="footer">
+        <button pButton pRipple label="Cancel" icon="pi pi-times" class="p-button-text" (click)="hideDialog()"></button>
+        <button pButton pRipple label="Save" icon="pi pi-check" class="p-button-text" (click)="saveQuestion()"></button>
+      </ng-template>
+    </p-dialog>
+
+    <p-dialog [(visible)]="deleteQuestionDialog" header="Confirm" [modal]="true" [style]="{width:'450px'}">
+      <div class="flex align-items-center justify-content-center">
+        <i class="pi pi-exclamation-triangle mr-3" style="font-size: 2rem"></i>
+        <span *ngIf="question">Are you sure you want to delete <b>{{question.question}}</b>?</span>
+      </div>
+      <ng-template pTemplate="footer">
+        <button pButton pRipple icon="pi pi-times" class="p-button-text" label="No" (click)="deleteQuestionDialog = false"></button>
+        <button pButton pRipple icon="pi pi-check" class="p-button-text" label="Yes" (click)="confirmDelete()"></button>
+      </ng-template>
+    </p-dialog>
+
+    <p-dialog [(visible)]="deleteQuestionsDialog" header="Confirm" [modal]="true" [style]="{width:'450px'}">
+      <div class="flex align-items-center justify-content-center">
+        <i class="pi pi-exclamation-triangle mr-3" style="font-size: 2rem"></i>
+        <span>Are you sure you want to delete selected questions?</span>
+      </div>
+      <ng-template pTemplate="footer">
+        <button pButton pRipple icon="pi pi-times" class="p-button-text" label="No" (click)="deleteQuestionsDialog = false"></button>
+        <button pButton pRipple icon="pi pi-check" class="p-button-text" label="Yes" (click)="confirmDeleteSelected()"></button>
+      </ng-template>
+    </p-dialog>
+  </div>
+</div>

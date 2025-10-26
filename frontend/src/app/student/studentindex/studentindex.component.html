@@ -1,0 +1,267 @@
+<div class="modern-container fade-in">
+  <!-- Header Section -->
+  <div class="modern-header slide-up">
+    <div class="header-content">
+      <h1 class="header-title">
+        <i class="pi pi-users"></i>
+        Student Management
+      </h1>
+      <p class="header-subtitle">Manage student records, enrollments, and academic information</p>
+    </div>
+    <div class="header-actions">
+      <button class="modern-btn modern-btn-primary" (click)="openDialog()">
+        <i class="pi pi-plus"></i>
+        New Student
+      </button>
+    </div>
+  </div>
+
+  <!-- Search and Filter Section -->
+  <div class="modern-section">
+    <div class="modern-card search-card">
+      <div class="search-content">
+        <div class="search-field">
+          <i class="pi pi-search search-icon"></i>
+          <input 
+            type="text" 
+            placeholder="Search students by name, number, email, or password..."
+            (input)="dt1.filterGlobal($event.target.value, 'contains')"
+            class="search-input">
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Students Table -->
+  <div class="modern-section">
+    <div class="modern-card table-card scale-in">
+      <div class="table-header">
+        <h3 class="table-title">
+          <i class="pi pi-list"></i>
+          Student List
+        </h3>
+        <div class="table-stats">
+          <span class="stat-badge">{{ data.length }} students</span>
+        </div>
+      </div>
+      
+      <div class="modern-table">
+        <p-table #dt1 [value]="data" dataKey="id" [tableStyle]="{ 'min-width': '60rem' }" 
+        [globalFilterFields]="['name', 'number', 'email', 'password']" styleClass="modern-table-component">
+
+          <ng-template pTemplate="header">
+            <tr>
+              <th class="expand-col"></th>
+              <th class="name-col">Student Name</th>
+              <th class="number-col">Student Number</th>
+              <th class="email-col">Email Address</th>
+              <th class="password-col">Password</th>
+              <th class="actions-col">Actions</th>
+            </tr>
+          </ng-template>
+
+          <ng-template pTemplate="body" let-student let-expanded="expanded">
+            <tr class="table-row">
+              <td class="expand-cell">
+                <button 
+                  type="button" 
+                  class="expand-btn"
+                  [pRowToggler]="student" 
+                  [class.expanded]="expanded">
+                  <i [class]="expanded ? 'pi pi-chevron-down' : 'pi pi-chevron-right'"></i>
+                </button>
+              </td>
+              <td class="name-cell">
+                <div class="student-name">
+                  <i class="pi pi-user"></i>
+                  {{ student.name }}
+                </div>
+              </td>
+              <td class="number-cell">
+                <span class="number-badge">{{ student.number }}</span>
+              </td>
+              <td class="email-cell">
+                <div class="email-info">
+                  <i class="pi pi-envelope"></i>
+                  {{ student.email }}
+                </div>
+              </td>
+              <td class="password-cell">
+                <div class="password-info">
+                  <i class="pi pi-lock"></i>
+                  {{ student.password }}
+                </div>
+              </td>
+              <td class="actions-cell">
+                <div class="action-buttons">
+                  <button class="action-btn edit-btn" (click)="openDialog(student)" title="Edit Student">
+                    <i class="pi pi-pencil"></i>
+                  </button>
+                  <button class="action-btn delete-btn" (click)="deleteStudent(student)" title="Delete Student">
+                    <i class="pi pi-trash"></i>
+                  </button>
+                </div>
+              </td>
+            </tr>
+          </ng-template>
+
+          <ng-template pTemplate="rowexpansion" let-student>
+            <tr class="expansion-row">
+              <td colspan="6">
+                <div class="expansion-content">
+                  <div class="expansion-header">
+                    <h4 class="expansion-title">
+                      <i class="pi pi-book"></i>
+                      Enrolled Courses
+                    </h4>
+                    <span class="course-count">{{ student.courses?.length || 0 }} courses</span>
+                  </div>
+                  
+                  <div class="courses-table" *ngIf="student.courses && student.courses.length > 0">
+                    <div class="course-grid">
+                      <div *ngFor="let course of student.courses" class="course-card">
+                        <div class="course-icon">
+                          <i class="pi pi-book"></i>
+                        </div>
+                        <div class="course-info">
+                          <h5 class="course-name">{{ course.name }}</h5>
+                          <div class="course-details">
+                            <span class="course-day">{{ course.day }}</span>
+                            <span class="course-time">{{ course.time }}</span>
+                          </div>
+                          <div class="course-meta">
+                            <span class="course-teacher">
+                              <i class="pi pi-user"></i>
+                              {{ teacherLookup.get(course.teacherId) || 'Unknown' }}
+                            </span>
+                            <span class="course-department">
+                              <i class="pi pi-building"></i>
+                              {{ departmentLookup.get(course.departmentId) || 'Unknown' }}
+                            </span>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <div class="empty-courses" *ngIf="!student.courses || student.courses.length === 0">
+                    <div class="empty-content">
+                      <i class="pi pi-book"></i>
+                      <p>No courses enrolled for this student</p>
+                    </div>
+                  </div>
+                </div>
+              </td>
+            </tr>
+          </ng-template>
+
+          <ng-template pTemplate="emptymessage">
+            <tr>
+              <td colspan="6">
+                <div class="empty-state">
+                  <div class="empty-content">
+                    <i class="pi pi-users"></i>
+                    <h3>No Students Found</h3>
+                    <p>Start by adding your first student</p>
+                    <button class="modern-btn modern-btn-primary" (click)="openDialog()">
+                      <i class="pi pi-plus"></i>
+                      Add Student
+                    </button>
+                  </div>
+                </div>
+              </td>
+            </tr>
+          </ng-template>
+        </p-table>
+      </div>
+    </div>
+  </div>
+</div>
+
+<p-dialog 
+  [header]="isEditing ? 'Update Student' : 'Create New Student'" 
+  [modal]="true" 
+  [(visible)]="isDialogOpen" 
+  [style]="{ width: '32rem' }"
+  [closable]="true"
+  [draggable]="false"
+  [resizable]="false">
+    
+  <div class="dialog-content">
+    <div class="dialog-description">
+      <i class="pi pi-info-circle"></i>
+      {{ isEditing ? 'Update the student information below.' : 'Fill in the details to create a new student.' }}
+    </div>
+    
+    <form [formGroup]="studentForm" class="student-form">
+      <div class="form-group">
+        <label for="name" class="form-label">
+          <i class="pi pi-user"></i>
+          Full Name
+        </label>
+        <input 
+          pInputText 
+          id="name" 
+          formControlName="name" 
+          placeholder="Enter student's full name"
+          class="form-input" />
+      </div>
+      
+      <div class="form-group">
+        <label for="number" class="form-label">
+          <i class="pi pi-id-card"></i>
+          Student Number
+        </label>
+        <input 
+          pInputText 
+          id="number" 
+          formControlName="number" 
+          placeholder="Enter student number"
+          class="form-input" />
+      </div>
+      
+      <div class="form-group">
+        <label for="email" class="form-label">
+          <i class="pi pi-envelope"></i>
+          Email Address
+        </label>
+        <input 
+          pInputText 
+          email 
+          id="email" 
+          formControlName="email" 
+          placeholder="Enter email address"
+          class="form-input" />
+      </div>
+      
+      <div class="form-group">
+        <label for="password" class="form-label">
+          <i class="pi pi-lock"></i>
+          Password
+        </label>
+        <input 
+          pInputText 
+          id="password" 
+          formControlName="password" 
+          placeholder="Enter password"
+          class="form-input" />
+      </div>
+    </form>
+  </div>
+
+  <ng-template pTemplate="footer">
+    <div class="dialog-footer">
+      <button class="modern-btn modern-btn-secondary" (click)="closeDialog()">
+        <i class="pi pi-times"></i>
+        Cancel
+      </button>
+      <button 
+        class="modern-btn modern-btn-primary" 
+        (click)="saveStudent()" 
+        [disabled]="studentForm.invalid">
+        <i class="pi pi-check"></i>
+        {{ isEditing ? 'Update Student' : 'Create Student' }}
+      </button>
+    </div>
+  </ng-template>
+</p-dialog>

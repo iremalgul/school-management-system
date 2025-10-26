@@ -1,0 +1,315 @@
+<div class="modern-container fade-in">
+  <!-- Header Section -->
+  <div class="modern-header slide-up">
+    <div class="header-content">
+      <h1 class="header-title">
+        <i class="pi pi-book"></i>
+        Course Management
+      </h1>
+      <p class="header-subtitle">Manage courses, schedules, and student enrollments</p>
+    </div>
+    <div class="header-actions">
+      <button class="modern-btn modern-btn-primary" (click)="openDialog()">
+        <i class="pi pi-plus"></i>
+        New Course
+      </button>
+    </div>
+  </div>
+
+  <!-- Search and Filter Section -->
+  <div class="modern-section">
+    <div class="modern-card search-card">
+      <div class="search-content">
+        <div class="search-field">
+          <i class="pi pi-search search-icon"></i>
+          <input 
+            type="text" 
+            placeholder="Search courses by name, day, time, teacher, or department..."
+            (input)="dt1.filterGlobal($event.target.value, 'contains')"
+            class="search-input">
+        </div>
+        <div class="filter-field">
+          <p-dropdown 
+            [options]="departments" 
+            [(ngModel)]="selectedDepartmentId"
+            optionLabel="name" 
+            optionValue="id"
+            placeholder="Filter by Department"
+            [showClear]="true"
+            (onChange)="onDepartmentFilter()"
+            class="filter-dropdown">
+          </p-dropdown>
+          <button 
+            class="modern-btn modern-btn-secondary clear-filter-btn"
+            (click)="clearFilter()"
+            [disabled]="selectedDepartmentId === null">
+            <i class="pi pi-times"></i>
+            Clear Filter
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Courses Table -->
+  <div class="modern-section">
+    <div class="modern-card table-card scale-in">
+      <div class="table-header">
+        <h3 class="table-title">
+          <i class="pi pi-list"></i>
+          Course List
+        </h3>
+        <div class="table-stats">
+          <span class="stat-badge">{{ filteredData.length }} courses</span>
+        </div>
+      </div>
+      
+      <div class="modern-table">
+        <p-table #dt1 [value]="filteredData" dataKey="id" [tableStyle]="{ 'min-width': '50rem' }"
+        [globalFilterFields]="['name', 'day', 'time', 'teacher', 'department']" styleClass="modern-table-component">
+
+          <ng-template pTemplate="header">
+            <tr>
+              <th class="expand-col"></th>
+              <th class="name-col">Course Name</th>
+              <th class="day-col">Day</th>
+              <th class="time-col">Time</th>
+              <th class="teacher-col">Teacher</th>
+              <th class="department-col">Department</th>
+              <th class="actions-col">Actions</th>
+            </tr>
+          </ng-template>
+
+          <ng-template pTemplate="body" let-course let-expanded="expanded">
+            <tr class="table-row">
+              <td class="expand-cell">
+                <button 
+                  type="button" 
+                  class="expand-btn"
+                  [pRowToggler]="course" 
+                  [class.expanded]="expanded">
+                  <i [class]="expanded ? 'pi pi-chevron-down' : 'pi pi-chevron-right'"></i>
+                </button>
+              </td>
+              <td class="name-cell">
+                <div class="course-name">
+                  <i class="pi pi-book"></i>
+                  {{ course.name }}
+                </div>
+              </td>
+              <td class="day-cell">
+                <span class="day-badge">{{ course.day }}</span>
+              </td>
+              <td class="time-cell">
+                <span class="time-badge">{{ course.time }}</span>
+              </td>
+              <td class="teacher-cell">
+                <div class="teacher-info">
+                  <i class="pi pi-user"></i>
+                  {{ teacherLookup.get(course.teacherId) || 'Unknown' }}
+                </div>
+              </td>
+              <td class="department-cell">
+                <div class="department-info">
+                  <i class="pi pi-building"></i>
+                  {{ departmentLookup.get(course.departmentId) || 'Unknown' }}
+                </div>
+              </td>
+              <td class="actions-cell">
+                <div class="action-buttons">
+                  <button class="action-btn edit-btn" (click)="openDialog(course)" title="Edit Course">
+                    <i class="pi pi-pencil"></i>
+                  </button>
+                  <button class="action-btn delete-btn" (click)="deleteCourse(course)" title="Delete Course">
+                    <i class="pi pi-trash"></i>
+                  </button>
+                  <button class="action-btn exams-btn" (click)="goToExams(course)" title="Manage Exams">
+                    <i class="pi pi-file-edit"></i>
+                  </button>
+                </div>
+              </td>
+            </tr>
+          </ng-template>
+
+          <ng-template pTemplate="rowexpansion" let-course>
+            <tr class="expansion-row">
+              <td colspan="7">
+                <div class="expansion-content">
+                  <div class="expansion-header">
+                    <h4 class="expansion-title">
+                      <i class="pi pi-users"></i>
+                      Enrolled Students
+                    </h4>
+                    <span class="student-count">{{ course.students?.length || 0 }} students</span>
+                  </div>
+                  
+                  <div class="students-table" *ngIf="course.students && course.students.length > 0">
+                    <div class="student-grid">
+                      <div *ngFor="let student of course.students" class="student-card">
+                        <div class="student-avatar">
+                          <i class="pi pi-user"></i>
+                        </div>
+                        <div class="student-info">
+                          <h5 class="student-name">{{ student.name }}</h5>
+                          <p class="student-number">{{ student.number }}</p>
+                          <p class="student-email">{{ student.email }}</p>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <div class="empty-students" *ngIf="!course.students || course.students.length === 0">
+                    <div class="empty-content">
+                      <i class="pi pi-users"></i>
+                      <p>No students enrolled in this course</p>
+                    </div>
+                  </div>
+                </div>
+              </td>
+            </tr>
+          </ng-template>
+
+          <ng-template pTemplate="emptymessage">
+            <tr>
+              <td colspan="7">
+                <div class="empty-state">
+                  <div class="empty-content">
+                    <i class="pi pi-book"></i>
+                    <h3>No Courses Found</h3>
+                    <p>Start by creating your first course</p>
+                    <button class="modern-btn modern-btn-primary" (click)="openDialog()">
+                      <i class="pi pi-plus"></i>
+                      Create Course
+                    </button>
+                  </div>
+                </div>
+              </td>
+            </tr>
+          </ng-template>
+        </p-table>
+      </div>
+    </div>
+  </div>
+</div>
+
+<p-dialog 
+  [header]="isEditing ? 'Update Course' : 'Create New Course'" 
+  [modal]="true" 
+  [(visible)]="isDialogOpen" 
+  [style]="{ width: '32rem' }"
+  [closable]="true"
+  [draggable]="false"
+  [resizable]="false">
+    
+  <div class="dialog-content">
+    <div class="dialog-description">
+      <i class="pi pi-info-circle"></i>
+      {{ isEditing ? 'Update the course information below.' : 'Fill in the details to create a new course.' }}
+    </div>
+    
+    <form [formGroup]="courseForm" class="course-form">
+      <div class="form-group">
+        <label for="name" class="form-label">
+          <i class="pi pi-book"></i>
+          Course Name
+        </label>
+        <input 
+          pInputText 
+          id="name" 
+          formControlName="name" 
+          placeholder="Enter course name"
+          class="form-input" />
+      </div>
+      
+      <div class="form-row">
+        <div class="form-group">
+          <label for="day" class="form-label">
+            <i class="pi pi-calendar"></i>
+            Day
+          </label>
+          <p-dropdown 
+            id="day" 
+            formControlName="day"
+            [options]="days" 
+            placeholder="Select a Day"
+            class="form-dropdown"
+            [autoZIndex]="true"
+            [baseZIndex]="10000"
+            appendTo="body">
+          </p-dropdown>
+        </div>
+        
+        <div class="form-group">
+          <label for="time" class="form-label">
+            <i class="pi pi-clock"></i>
+            Time
+          </label>
+          <p-dropdown 
+            id="time" 
+            formControlName="time" 
+            [options]="times" 
+            placeholder="Select a Time"
+            class="form-dropdown"
+            [autoZIndex]="true"
+            [baseZIndex]="10000"
+            appendTo="body">
+          </p-dropdown>
+        </div>
+      </div>
+      
+      <div class="form-group">
+        <label for="teacherId" class="form-label">
+          <i class="pi pi-user"></i>
+          Teacher
+        </label>
+        <p-dropdown 
+          id="teacherId" 
+          formControlName="teacherId" 
+          [options]="teachers" 
+          optionLabel="name" 
+          optionValue="id" 
+          placeholder="Select a Teacher"
+          class="form-dropdown"
+          [autoZIndex]="true"
+          [baseZIndex]="10000"
+          appendTo="body">
+        </p-dropdown>
+      </div>
+      
+      <div class="form-group">
+        <label for="departmentId" class="form-label">
+          <i class="pi pi-building"></i>
+          Department
+        </label>
+        <p-dropdown 
+          id="departmentId" 
+          formControlName="departmentId" 
+          [options]="departments" 
+          optionLabel="name" 
+          optionValue="id" 
+          placeholder="Select a Department"
+          class="form-dropdown"
+          [autoZIndex]="true"
+          [baseZIndex]="10000"
+          appendTo="body">
+        </p-dropdown>
+      </div>
+    </form>
+  </div>
+
+  <ng-template pTemplate="footer">
+    <div class="dialog-footer">
+      <button class="modern-btn modern-btn-secondary" (click)="closeDialog()">
+        <i class="pi pi-times"></i>
+        Cancel
+      </button>
+      <button 
+        class="modern-btn modern-btn-primary" 
+        (click)="saveCourse()" 
+        [disabled]="courseForm.invalid">
+        <i class="pi pi-check"></i>
+        {{ isEditing ? 'Update Course' : 'Create Course' }}
+      </button>
+    </div>
+  </ng-template>
+</p-dialog>
