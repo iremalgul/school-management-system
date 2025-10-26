@@ -3,7 +3,7 @@
 A comprehensive full-stack school management application built with Angular and .NET Core, featuring real-time exam functionality, user management, and course administration.
 
 ## 🎥 Demo Video
-**[📺 Watch Project Demo](https://drive.google.com/file/d/YOUR_VIDEO_ID/view)** - Complete walkthrough of all features and functionality
+**[📺 Watch Project Demo](https://drive.google.com/file/d/1hhJXbqeSN-5oQT6gQkwsgcFrB92ICanP/view)** - Complete walkthrough of all features and functionality
 
 ## ✨ Features
 
